@@ -1,0 +1,22 @@
+fastapi==0.115.6
+uvicorn==0.33.0
+pydantic==2.10.4
+pydantic-core==2.27.2
+starlette==0.41.3
+
+# База данных
+SQLAlchemy==2.0.36
+psycopg2-binary==2.9.8
+alembic==1.14.0
+
+# Kafka
+aiokafka==0.11.0
+
+# Redis
+redis==5.2.1
+
+# Вспомогательные библиотеки
+anyio==3.7.1
+typing-extensions==4.12.2
+click==8.1.8
+
