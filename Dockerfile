@@ -1,20 +1,32 @@
-# Используем официальный образ Python
-FROM python:3.10-alpine
+# Use a lightweight Debian-based Python image
+FROM python:3.10-slim
 
-# Устанавливаем рабочую директорию
+# Set the working directory
 WORKDIR /app
 
-# Копируем файл зависимостей
+# Install necessary system dependencies
+RUN apt-get update && apt-get install -y \
+    gcc \
+    make \
+    libssl-dev \
+    python3-dev \
+    libffi-dev \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Upgrade pip
+RUN pip install --no-cache-dir --upgrade pip
+
+# Copy dependency file
 COPY requirements.txt .
 
-# Устанавливаем зависимости
+# Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Копируем код приложения
+# Copy application code
 COPY . .
 
-# Открываем порт 8000
+# Expose port 8000
 EXPOSE 8000
 
-# Запускаем приложение
+# Start the FastAPI application
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
