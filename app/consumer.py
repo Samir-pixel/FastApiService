@@ -1,17 +1,19 @@
 import json
 import asyncio
 from aiokafka import AIOKafkaConsumer
-from FastService.database import SessionLocal
-from FastService.models import Game
+from app.database import SessionLocal
+from app.models import Game
 from redis.asyncio import Redis
+from app.producer import produce
 
 redis = Redis()
 
 async def save_to_cache(key, value):
     await redis.set(key, value)
 
-KAFKA_BROKERS = "localhost:9092"
+KAFKA_BROKERS = "kafka:9092"
 KAFKA_TOPIC = "query_topic"
+RESPONSE_TOPIC = "response_topic"
 
 async def consume():
     consumer = AIOKafkaConsumer(
@@ -29,6 +31,13 @@ async def consume():
             if query:
                 games = search_games(query)
                 print(f"Search results: {games}")
+
+                # Отправляем результаты в ответный топик
+                response_message = {
+                    "query": query,
+                    "results": [game.name for game in games]
+                }
+                await produce(response_message)
     finally:
         await consumer.stop()
 
@@ -38,6 +47,3 @@ def search_games(query: str):
         return db.query(Game).filter(Game.name.ilike(f"%{query}%")).all()
     finally:
         db.close()
-
-if __name__ == "__main__":
-    asyncio.run(consume())

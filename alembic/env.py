@@ -18,7 +18,7 @@ if config.config_file_name is not None:
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
-from FastService.models import Base  # замените путь на ваш проект
+from app.models import Base  # замените путь на ваш проект
 target_metadata = Base.metadata
 
 
