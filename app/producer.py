@@ -1,8 +1,7 @@
-import asyncio
 import json
 from aiokafka import AIOKafkaProducer
 
-KAFKA_BROKERS = "localhost:9092"
+KAFKA_BROKERS = "kafka:9092"
 RESPONSE_TOPIC = "response_topic"
 
 async def produce(message: dict):
@@ -11,8 +10,6 @@ async def produce(message: dict):
 
     try:
         await producer.send_and_wait(RESPONSE_TOPIC, json.dumps(message).encode("utf-8"))
+        print(f"Message sent: {message}")
     finally:
         await producer.stop()
-
-if __name__ == "__main__":
-    asyncio.run(produce({"status": "test message"}))
