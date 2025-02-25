@@ -10,6 +10,6 @@ async def produce(message: dict):
 
     try:
         await producer.send_and_wait(RESPONSE_TOPIC, json.dumps(message).encode("utf-8"))
-        print(f"Message sent: {message}")
+        print(f"Message sent:  {message}")
     finally:
         await producer.stop()
