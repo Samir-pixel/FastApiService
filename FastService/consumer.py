@@ -1,5 +1,6 @@
 import json
 import asyncio
+import os
 from aiokafka import AIOKafkaConsumer
 from FastService.database import SessionLocal
 from FastService.models import Game
@@ -10,7 +11,8 @@ redis = Redis()
 async def save_to_cache(key, value):
     await redis.set(key, value)
 
-KAFKA_BROKERS = "localhost:9092"
+# Получаем адрес Kafka из переменной окружения
+KAFKA_BROKERS = os.getenv("KAFKA_BOOTSTRAP_SERVERS", "kafka:9092")
 KAFKA_TOPIC = "query_topic"
 
 async def consume():

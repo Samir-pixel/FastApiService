@@ -1,20 +1,18 @@
-# Используем официальный образ Python
 FROM python:3.10-alpine
 
-# Устанавливаем рабочую директорию
 WORKDIR /app
 
-# Копируем файл зависимостей
+# Установка компилятора, зависимостей и zlib для aiokafka
+RUN apk add --no-cache gcc musl-dev python3-dev zlib-dev
+
 COPY requirements.txt .
+RUN pip install -r requirements.txt
 
-# Устанавливаем зависимости
-RUN pip install --no-cache-dir -r requirements.txt
-
-# Копируем код приложения
+# Копируем весь проект, сохраняя структуру FastService/
 COPY . .
 
-# Открываем порт 8000
+# Открываем порт 8000 для FastAPI
 EXPOSE 8000
 
 # Запускаем приложение
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+CMD ["uvicorn", "FastService.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]

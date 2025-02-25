@@ -1,6 +1,6 @@
 services:
   zookeeper:
-    image: confluentinc/cp-zookeeper:latest
+    image: wurstmeister/zookeeper
     container_name: zookeeper
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
@@ -9,23 +9,36 @@ services:
       - "2181:2181"
 
   kafka:
-    image: confluentinc/cp-kafka:latest
+    image: wurstmeister/kafka
     container_name: kafka
     depends_on:
       - zookeeper
     ports:
       - "9092:9092"
     environment:
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_CREATE_TOPICS: "search-queries:1:1"
 
   redis:
     image: redis:latest
     container_name: redis
     ports:
       - "6379:6379"
+  postgres:
+    image: postgres:latest
+    container_name: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: FastApi_Search
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
 
   fastapi-app:
     build:
@@ -34,10 +47,18 @@ services:
     container_name: fastapi-app
     ports:
       - "8000:8000"
+    command: uvicorn FastService.main:app --host 0.0.0.0 --port 8000 --reload
     depends_on:
       - kafka
       - redis
+      - postgres
+
     environment:
       REDIS_HOST: redis
       REDIS_PORT: 6379
       KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      DATABASE_URL: "postgresql://postgres:postgres@postgres:5432/FastApi_Search"
+
+volumes:
+  postgres_data:
+
