@@ -16,16 +16,18 @@ KAFKA_TOPIC = "query_topic"
 RESPONSE_TOPIC = "response_topic"
 
 async def consume():
+    await asyncio.sleep(10) 
     consumer = AIOKafkaConsumer(
         KAFKA_TOPIC,
         bootstrap_servers=KAFKA_BROKERS,
-        group_id="fastapi_consumer"
+        group_id="search_group"
     )
     await consumer.start()
 
     try:
         async for msg in consumer:
             message = json.loads(msg.value.decode("utf-8"))
+            print(message)
             query = message.get("query")
 
             if query:
