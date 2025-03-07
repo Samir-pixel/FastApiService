@@ -1,13 +1,11 @@
 import os
-
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
-
 
 DB_USER = os.getenv("DB_USER", "postgres")
 DB_PASSWORD = os.getenv("DB_PASSWORD", "postgres")
 DB_HOST = os.getenv("DB_HOST", "postgres")
-DB_PORT = os.getenv("DB_PORT", "5432")
+DB_PORT = os.getenv("DB_PORT", "5434")
 DB_NAME = os.getenv("DB_NAME", "games")
 
 # Формируем URL для подключения
